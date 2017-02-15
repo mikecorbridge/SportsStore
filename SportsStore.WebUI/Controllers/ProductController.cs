@@ -21,11 +21,8 @@ namespace SportsStore.WebUI.Controllers
         {
             ProductsListViewModel model = new ProductsListViewModel
             {
-                Products = repository.Products
-                 .Where(p => category == null || p.Category == category)
-                .OrderBy(p => p.ProductID)
-                .Skip((page - 1) * PageSize)
-                .Take(PageSize),
+                Products = repository.Products.Where(p => category == null || p.Category == category)
+                .OrderBy(p => p.ProductID),
                 PagingInfo = new PagingInfo
                 {
                     CurrentPage = page,
@@ -38,5 +35,26 @@ namespace SportsStore.WebUI.Controllers
             };
             return View(model);
         }
+        //public ViewResult List(string category, int page = 1)
+        //{
+        //    ProductsListViewModel model = new ProductsListViewModel
+        //    {
+        //        Products = repository.Products
+        //         .Where(p => category == null || p.Category == category)
+        //        .OrderBy(p => p.ProductID)
+        //        .Skip((page - 1) * PageSize)
+        //        .Take(PageSize),
+        //        PagingInfo = new PagingInfo
+        //        {
+        //            CurrentPage = page,
+        //            ItemsPerPage = PageSize,
+        //            TotalItems = category == null ?
+        //            repository.Products.Count() :
+        //            repository.Products.Where(e => e.Category == category).Count()
+        //        },
+        //        CurrentCategory = category
+        //    };
+        //    return View(model);
+        //}
     }
 }

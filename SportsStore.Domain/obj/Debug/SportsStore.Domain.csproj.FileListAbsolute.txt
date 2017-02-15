@@ -1,0 +1,1 @@
+C:\Users\Michael\Desktop\First MVC App\SportsStore\SportsStore.Domain\obj\Debug\SportsStore.Domain.csprojResolveAssemblyReference.cache

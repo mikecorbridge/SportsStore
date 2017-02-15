@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace SportsStore.Domain.Abstract
 {
-    class IProductRepository
+    public class IProductRepository
     {
-        IEnumerable<Product> Products { get; }
+        public IEnumerable<Product> Products { get; }
     }
 }

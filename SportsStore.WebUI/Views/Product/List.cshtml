@@ -4,13 +4,14 @@
     ViewBag.Title = "Products";
 }
 
+@foreach (var p in Model.Products)
+{
+    @Html.Partial("ProductSummary", p)
+}
 
-@*@foreach (var p in Model.Products)
-{    @Html.Partial("ProductSummary", p) }*@
 
-@Html.PagedProductGrid(Model.PagingInfo, Model.Products)
+@*@Html.PagedProductGrid(Model.PagingInfo, Model.Products)*@
 
 <div class="btn-group pull-right">
-        @Html.PageLinks(Model.PagingInfo, x => Url.Action("List",
-       new { page = x, category = Model.CurrentCategory }))
- </div>
+    @Html.PageLinks(Model.PagingInfo, x => Url.Action("List", new { page = x, category = Model.CurrentCategory }))
+</div>

@@ -11,15 +11,18 @@ namespace SportsStore.WebUI.Controllers
     {
         private IProductRepository repository;
         private IOrderProcessor orderProcessor;
-        public CartController(EFProductRepository repo, IOrderProcessor proc)
+
+        public CartController(IProductRepository repo, IOrderProcessor proc)
         {
             repository = repo;
             orderProcessor = proc;
         }
+
         public ViewResult Index(Cart cart, string returnUrl)
         {
             return View(new CartIndexViewModel
             {
+                //Cart = GetCart(),
                 ReturnUrl = returnUrl,
                 Cart = cart
             });
@@ -27,28 +30,44 @@ namespace SportsStore.WebUI.Controllers
 
         public RedirectToRouteResult AddToCart(Cart cart, int productId, string returnUrl)
         {
-            Product product = repository.Products.FirstOrDefault(p => p.ProductID == productId);
-
+            Product product = repository.Products
+                .FirstOrDefault(p => p.ProductID == productId);
             if (product != null)
             {
+                //GetCart().AddItem(product, 1);
                 cart.AddItem(product, 1);
             }
             return RedirectToAction("Index", new { returnUrl });
         }
+
         public RedirectToRouteResult RemoveFromCart(Cart cart, int productId, string returnUrl)
         {
-            Product product = repository.Products.FirstOrDefault(p => p.ProductID == productId);
-
+            Product product = repository.Products
+                 .FirstOrDefault(p => p.ProductID == productId);
             if (product != null)
             {
+                //GetCart().RemoveLine(product);
                 cart.RemoveLine(product);
             }
             return RedirectToAction("Index", new { returnUrl });
         }
+
+        private Cart GetCart()
+        {
+            Cart cart = (Cart)Session["Cart"];
+            if (cart == null)
+            {
+                cart = new Cart();
+                Session["Cart"] = cart;
+            }
+            return cart;
+        }
+
         public PartialViewResult Summary(Cart cart)
         {
             return PartialView(cart);
         }
+
         public ViewResult Checkout()
         {
             return View(new ShippingDetails());
@@ -59,9 +78,8 @@ namespace SportsStore.WebUI.Controllers
         {
             if (cart.Lines.Count() == 0)
             {
-                ModelState.AddModelError("", "Sorry, your cart is empty!");
+                ModelState.AddModelError("", "Sorry, your cart is empty");
             }
-
             if (ModelState.IsValid)
             {
                 orderProcessor.ProcessOrder(cart, shippingDetails);
@@ -73,6 +91,5 @@ namespace SportsStore.WebUI.Controllers
                 return View(shippingDetails);
             }
         }
-
     }
 }

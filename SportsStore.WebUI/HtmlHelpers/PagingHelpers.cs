@@ -4,23 +4,22 @@ using System.Web.Mvc;
 using SportsStore.WebUI.Models;
 using System.Collections.Generic;
 using SportsStore.Domain.Entities;
+using System.Linq;
 
 namespace SportsStore.WebUI.HtmlHelpers
 {
     public static class PagingHelpers
     {
-        public static MvcHtmlString PageLinks(this HtmlHelper html,
-                                                PagingInfo pagingInfo,
-                                                Func<int, string> pageUrl)
+        public static MvcHtmlString PageLinks(this HtmlHelper html, PagingInfo paginginfo, Func<int, string> pageUrl)
         {
-
             StringBuilder result = new StringBuilder();
-            for (int i = 1; i <= pagingInfo.TotalPages; i++)
+
+            for (int i = 1; i <= paginginfo.TotalPages; i++)
             {
                 TagBuilder tag = new TagBuilder("a");
                 tag.MergeAttribute("href", pageUrl(i));
                 tag.InnerHtml = i.ToString();
-                if (i == pagingInfo.CurrentPage)
+                if (i == paginginfo.CurrentPage)
                 {
                     tag.AddCssClass("selected");
                     tag.AddCssClass("btn-primary");
@@ -28,34 +27,34 @@ namespace SportsStore.WebUI.HtmlHelpers
                 tag.AddCssClass("btn btn-default");
                 result.Append(tag.ToString());
             }
+
             return MvcHtmlString.Create(result.ToString());
         }
-
-        public static MvcHtmlString PagedProductGrid(this HtmlHelper html,
-                                                    PagingInfo pagingInfo, 
-                                                    IEnumerable<Product> products)
+        //extension method (because of this)
+        public static MvcHtmlString PagedProductGrid(this HtmlHelper html, PagingInfo paging,
+            IEnumerable<Product> products)
         {
             StringBuilder result = new StringBuilder();
+            var gridProducts = products.OrderBy(p => p.ProductID)
+                .Skip((paging.CurrentPage - 1) * paging.ItemsPerPage)
+                .Take(paging.ItemsPerPage);
 
-           var gridProduct = products.OrderBy(p => p.ProductID)
-                .Skip((pagingInfo.CurrentPage - 1) * pagingInfo.ItemsPerPage)
-                .Take(pagingInfo.ItemsPerPage);
 
-            foreach (var products in gridProduct)
+            foreach (var product in gridProducts)
             {
                 TagBuilder h2 = new TagBuilder("h2");
                 TagBuilder p = new TagBuilder("p");
-
-                h2.InnerHtml = products.Name + " (" + products.Category + ")";
-                p.InnerHtml = products.Description;
+                h2.InnerHtml = product.Name + " (" + product.Price.ToString("c") + ")";
+                p.InnerHtml = product.Description;
 
                 TagBuilder div = new TagBuilder("div");
                 div.InnerHtml = h2.ToString() + p.ToString();
-                div.AddCssClass("well");
 
+                div.AddCssClass("well");
                 TagBuilder br = new TagBuilder("br");
-                result.Append(div.ToString());
+                result.Append(div.ToString() + br.ToString());
             }
+
             return MvcHtmlString.Create(result.ToString());
         }
     }
